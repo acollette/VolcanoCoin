@@ -6,6 +6,7 @@ const { ethers } = require("hardhat");
 describe("VulcanoContract", function () {
 
   let VulcanoContract, vulcanoContract, owner, addr1, addr2;
+  provider = ethers.provider;
 
   beforeEach(async () =>{
     //Deploy a new instance of the contract
@@ -116,6 +117,23 @@ describe("VulcanoContract", function () {
     expect(await vulcanoContract.balanceOf(addr2.address)).to.equal(initBalAddr2 + 100);
 
   });
+
+  it("should transfer ETH from Vitalik account to me", async () =>{
+
+    const initBalance = await provider.getBalance("0x1F7673Af4859f0ACD66bB01eda90a2694Ed271DB");
+
+    const signer = await ethers.provider.getSigner("0x1Db3439a222C519ab44bb1144fC28167b4Fa6EE6")
+
+    await signer.sendTransaction({
+      to: "0x1F7673Af4859f0ACD66bB01eda90a2694Ed271DB",
+      value: ethers.utils.parseEther("1")
+    });
+
+    const finalBalance = await provider.getBalance("0x1F7673Af4859f0ACD66bB01eda90a2694Ed271DB");
+
+    await expect(finalBalance - initBalance).to.equal(1000000000000000000);
+
+  })
 
 
 })
